@@ -158,25 +158,25 @@ iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
 #### 18. Block an IP Address
 
 ```bash
-iptables -A INPUT -s 15.15.15.51 -j DROP
+iptables -A INPUT -s 192.168.252.10 -j DROP
 ```
 
 #### 19. Block and IP Address and Reject
 
 ```bash
-iptables -A INPUT -s 15.15.15.51 -j REJECT
+iptables -A INPUT -s 192.168.252.10 -j REJECT
 ```
 
 #### 20. Block Connections to a Network Interface
 
 ```bash
-iptables -A INPUT -i eth0 -s 15.15.15.51 -j DROP
+iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
 ```
 
 #### 21. Block Connections to a Network Interface
 
 ```bash
-iptables -A INPUT -i eth0 -s 15.15.15.51 -j DROP
+iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
 ```
 
 #### 22. Allow All Incoming SSH
