@@ -25,11 +25,53 @@
 
 ****
 
-#### Tools to help you configure iptables
+### Tools to help you configure Iptables
 
 - **[Shorewall](http://shorewall.org/)**
 - **[Firewalld](https://firewalld.org/)**
 - **[FireHOL](https://github.com/firehol/firehol)**
+
+
+### Iptables Rules
+
+- [1. Saving Rules](#1-saving-rules)
+- [2. List out all of the active iptables rules](#2-list-out-all-of-the-active-iptables-rules)
+- [3. List out all of the active iptables rules with numeric lines](#3-list-out-all-of-the-active-iptables-rules-with-numeric-lines)
+- [4. List Rules as Tables](#4-list-rules-as-tables)
+- [5. List Rules as Tables for INPUT chain](#5-list-rules-as-tables-for-input-chain)
+- [6. Show all of the rule specifications in the INPUT chain](#6-show-all-of-the-rule-specifications-in-the-input-chain)
+- [7. Show Packet Counts and Aggregate Size](#7-show-packet-counts-and-aggregate-size)
+- [8. Delete Rule by Chain and Number](#8-delete-rule-by-chain-and-number)
+- [9. Delete Rule by Specification](#9-delete-rule-by-specification)
+- [10. Flush All Rules, Delete All Chains, and Accept All](#10-flush-all-rules--delete-all-chains--and-accept-all)
+- [11. Flush All Chains](#11-flush-all-chains)
+- [12. Flush a Single Chain](#12-flush-a-single-chain)
+- [13. Allow Loopback Connections](#13-allow-loopback-connections)
+- [14. Allow Established and Related Incoming Connections](#14-allow-established-and-related-incoming-connections)
+- [15. Allow Established Outgoing Connections](#15-allow-established-outgoing-connections)
+- [16. Internal to External](#16-internal-to-external)
+- [17. Drop Invalid Packets](#17-drop-invalid-packets)
+- [18. Block an IP Address](#18-block-an-ip-address)
+- [19. Block and IP Address and Reject](#19-block-and-ip-address-and-reject)
+- [20. Block Connections to a Network Interface](#20-block-connections-to-a-network-interface)
+- [21. Block Connections to a Network Interface](#21-block-connections-to-a-network-interface)
+- [22. Allow All Incoming SSH](#22-allow-all-incoming-ssh)
+- [23. Allow Incoming SSH from Specific IP address or subnet](#23-allow-incoming-ssh-from-specific-ip-address-or-subnet)
+- [24. Allow Outgoing SSH](#24-allow-outgoing-ssh)
+- [25. Allow Incoming Rsync from Specific IP Address or Subnet](#25-allow-incoming-rsync-from-specific-ip-address-or-subnet)
+- [26. Allow All Incoming HTTP](#26-allow-all-incoming-http)
+- [27. Allow All Incoming HTTPS](#27-allow-all-incoming-https)
+- [28. Allow All Incoming HTTP and HTTPS](#28-allow-all-incoming-http-and-https)
+- [29. Allow MySQL from Specific IP Address or Subnet](#29-allow-mysql-from-specific-ip-address-or-subnet)
+- [30. Allow MySQL to Specific Network Interface](#30-allow-mysql-to-specific-network-interface)
+- [31. PostgreSQL from Specific IP Address or Subnet](#31-postgresql-from-specific-ip-address-or-subnet)
+- [32. Allow PostgreSQL to Specific Network Interface](#32-allow-postgresql-to-specific-network-interface)
+- [33. Block Outgoing SMTP Mail](#33-block-outgoing-smtp-mail)
+- [34. Allow All Incoming SMTP](#34-allow-all-incoming-smtp)
+- [35. Allow All Incoming IMAP](#35-allow-all-incoming-imap)
+- [36. Allow All Incoming IMAPS](#36-allow-all-incoming-imaps)
+- [37. Allow All Incoming POP3](#37-allow-all-incoming-pop3)
+- [38. Allow All Incoming POP3S](#38-allow-all-incoming-pop3s)
 
 #### 1. Saving Rules
 
@@ -158,25 +200,25 @@ iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
 #### 18. Block an IP Address
 
 ```bash
-iptables -A INPUT -s 192.168.252.10 -j DROP
+iptables -A INPUT -s 15.15.15.51 -j DROP
 ```
 
 #### 19. Block and IP Address and Reject
 
 ```bash
-iptables -A INPUT -s 192.168.252.10 -j REJECT
+iptables -A INPUT -s 15.15.15.51 -j REJECT
 ```
 
 #### 20. Block Connections to a Network Interface
 
 ```bash
-iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
+iptables -A INPUT -i eth0 -s 15.15.15.51 -j DROP
 ```
 
 #### 21. Block Connections to a Network Interface
 
 ```bash
-iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
+iptables -A INPUT -i eth0 -s 15.15.15.51 -j DROP
 ```
 
 #### 22. Allow All Incoming SSH
