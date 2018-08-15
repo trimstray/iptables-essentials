@@ -86,12 +86,6 @@
 ###### Debian Based
 
 ```bash
-apt-get install iptables-persistent
-```
-
-If you update your firewall rules and want to save the changes, run this command:
-
-```bash
 netfilter-persistent save
 ```
 
@@ -101,22 +95,22 @@ netfilter-persistent save
 service iptables save
 ```
 
-#### List out all of the active iptables rules
+#### List out all of the active iptables rules with
+
+```bash
+iptables -n -L -v
+```
+
+#### List out all of the active iptables rules with numeric lines and verbose
+
+```bash
+iptables -n -L -v --line-numbers
+```
+
+#### Print out all of the active iptables rules
 
 ```bash
 iptables -S
-```
-
-#### List out all of the active iptables rules with numeric lines
-
-```bash
-iptables -L --line-numbers
-```
-
-#### List Rules as Tables
-
-```bash
-iptables -L
 ```
 
 #### List Rules as Tables for INPUT chain
@@ -125,7 +119,7 @@ iptables -L
 iptables -L INPUT
 ```
 
-#### Show all of the rule specifications in the INPUT chain
+#### Print all of the rule specifications in the INPUT chain
 
 ```bash
 iptables -S INPUT
@@ -135,6 +129,13 @@ iptables -S INPUT
 
 ```bash
 iptables -L INPUT -v
+```
+
+#### To display INPUT or OUTPUT chain rules with numeric lines and verbose
+
+```bash
+iptables -L INPUT -n -v
+iptables -L OUTPUT -n -v --line-numbers
 ```
 
 #### Delete Rule by Chain and Number
@@ -172,6 +173,12 @@ iptables -F
 
 ```bash
 iptables -F INPUT
+```
+
+#### Insert Firewall Rules
+
+```bash
+iptables -I INPUT 2 -s 202.54.1.2 -j DROP
 ```
 
 #### Allow Loopback Connections
@@ -345,4 +352,38 @@ iptables -A OUTPUT -p tcp --sport 110 -m conntrack --ctstate ESTABLISHED -j ACCE
 ```bash
 iptables -A INPUT -p tcp --dport 995 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 995 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+```
+
+#### Drop Private Network Address On Public Interface
+
+```bash
+iptables -A INPUT -i eth1 -s 192.168.0.0/24 -j DROP
+iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP
+```
+
+#### Only Block Incoming Traffic
+
+```bash
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+iptables -A INPUT -m state --state NEW,ESTABLISHED -j ACCEPT
+```
+
+#### Drop All Outgoing to Facebook Networks
+
+Get Facebook AS:
+
+```bash
+whois -h v4.whois.cymru.com " -v $(host facebook.com | grep "has address" | cut -d " " -f4)"
+```
+
+Drop:
+
+```bash
+for i in $(whois -h whois.radb.net -- '-i origin AS32934' | grep "^route:" | cut -d ":" -f2 | sed -e 's/^[ \t]*//' | sort -n -t . -k 1,1 -k 2,2 -k 3,3 -k 4,4 | cut -d ":" -f2 | sed 's/$/;/') ; do
+
+  iptables -A OUTPUT -s "$i" -j REJECT
+
+done
 ```
