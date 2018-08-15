@@ -72,7 +72,10 @@
   * [Drop Private Network Address On Public Interface](#drop-private-network-address-on-public-interface)
   * [Only Block Incoming Traffic](#only-block-incoming-traffic)
   * [Drop All Outgoing to Facebook Networks](#drop-all-outgoing-to-facebook-networks)
-
+  * [Log and Drop Packets](#log-and-drop-packets)
+  * [Log and Drop Packets with Limited Number of Log Entries](#log-and-drop-packets-with-limited-number-of-log-entries)
+  * [Drop or Accept Traffic From Mac Address](#drop-or-accept-traffic-from-mac-address)
+  * [Block or Allow ICMP Ping Request](#block-or-allow-icmp-ping-request)
 
 ****
 
@@ -390,4 +393,39 @@ for i in $(whois -h whois.radb.net -- '-i origin AS32934' | grep "^route:" | cut
   iptables -A OUTPUT -s "$i" -j REJECT
 
 done
+```
+
+#### Log and Drop Packets
+
+```bash
+ptables -A INPUT -i eth1 -s 10.0.0.0/8 -j LOG --log-prefix "IP_SPOOF A: "
+iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP
+```
+
+By default everything is logged to `/var/log/messages` file:
+
+```bash
+tail -f /var/log/messages
+grep --color 'IP SPOOF' /var/log/messages
+```
+
+#### Log and Drop Packets with Limited Number of Log Entries
+
+```bash
+iptables -A INPUT -i eth1 -s 10.0.0.0/8 -m limit --limit 5/m --limit-burst 7 -j LOG --log-prefix "IP_SPOOF A: "
+iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP
+```
+
+#### Drop or Accept Traffic From Mac Address
+
+```bash
+iptables -A INPUT -m mac --mac-source 00:0F:EA:91:04:08 -j DROP
+iptables -A INPUT -p tcp --destination-port 22 -m mac --mac-source 00:0F:EA:91:04:07 -j ACCEPT
+```
+
+#### Block or Allow ICMP Ping Request
+
+```bash
+iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+iptables -A INPUT -i eth1 -p icmp --icmp-type echo-request -j DROP
 ```
