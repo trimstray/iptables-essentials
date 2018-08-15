@@ -30,19 +30,19 @@
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
-      - [Debian Based](#debian-based)
-      - [RedHat Based](#redhat-based)
-  * [List out all of the active iptables rules](#list-out-all-of-the-active-iptables-rules)
-  * [List out all of the active iptables rules with numeric lines](#list-out-all-of-the-active-iptables-rules-with-numeric-lines)
-  * [List Rules as Tables](#list-rules-as-tables)
+  * [List out all of the active iptables rules with verbose](#list-out-all-of-the-active-iptables-rules-with-verbose)
+  * [List out all of the active iptables rules with numeric lines and verbose](#list-out-all-of-the-active-iptables-rules-with-numeric-lines-and-verbose)
+  * [Print out all of the active iptables rules](#print-out-all-of-the-active-iptables-rules)
   * [List Rules as Tables for INPUT chain](#list-rules-as-tables-for-input-chain)
-  * [Show all of the rule specifications in the INPUT chain](#show-all-of-the-rule-specifications-in-the-input-chain)
+  * [Print all of the rule specifications in the INPUT chain](#print-all-of-the-rule-specifications-in-the-input-chain)
   * [Show Packet Counts and Aggregate Size](#show-packet-counts-and-aggregate-size)
+  * [To display INPUT or OUTPUT chain rules with numeric lines and verbose](#to-display-input-or-output-chain-rules-with-numeric-lines-and-verbose)
   * [Delete Rule by Chain and Number](#delete-rule-by-chain-and-number)
   * [Delete Rule by Specification](#delete-rule-by-specification)
   * [Flush All Rules, Delete All Chains, and Accept All](#flush-all-rules--delete-all-chains--and-accept-all)
   * [Flush All Chains](#flush-all-chains)
   * [Flush a Single Chain](#flush-a-single-chain)
+  * [Insert Firewall Rules](#insert-firewall-rules)
   * [Allow Loopback Connections](#allow-loopback-connections)
   * [Allow Established and Related Incoming Connections](#allow-established-and-related-incoming-connections)
   * [Allow Established Outgoing Connections](#allow-established-outgoing-connections)
@@ -69,6 +69,10 @@
   * [Allow All Incoming IMAPS](#allow-all-incoming-imaps)
   * [Allow All Incoming POP3](#allow-all-incoming-pop3)
   * [Allow All Incoming POP3S](#allow-all-incoming-pop3s)
+  * [Drop Private Network Address On Public Interface](#drop-private-network-address-on-public-interface)
+  * [Only Block Incoming Traffic](#only-block-incoming-traffic)
+  * [Drop All Outgoing to Facebook Networks](#drop-all-outgoing-to-facebook-networks)
+
 
 ****
 
@@ -95,7 +99,7 @@ netfilter-persistent save
 service iptables save
 ```
 
-#### List out all of the active iptables rules with
+#### List out all of the active iptables rules with verbose
 
 ```bash
 iptables -n -L -v
@@ -375,7 +379,7 @@ iptables -A INPUT -m state --state NEW,ESTABLISHED -j ACCEPT
 Get Facebook AS:
 
 ```bash
-whois -h v4.whois.cymru.com " -v $(host facebook.com | grep "has address" | cut -d " " -f4)"
+whois -h v4.whois.cymru.com " -v $(host facebook.com | grep "has address" | cut -d " " -f4)" | tail -n1 | awk '{print $1}'
 ```
 
 Drop:
