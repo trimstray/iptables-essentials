@@ -1,4 +1,4 @@
-<h2 align="center">Iptables Essentials: Common Firewall Rules and Commands</h2>
+<h2 align="center">Iptables Essentials: Common Firewall Rules and Commands (more than 45)</h2>
 
 <br>
 
@@ -22,6 +22,16 @@
 </div>
 
 <br>
+
+<p align="center">
+Found on the Internet - All in One List.
+</p>
+
+## :ballot_box_with_check: Todo
+
+- [ ] Add useful Iptables configuration examples
+- [ ] Add links to useful external resources
+- [ ] Add advanced configuration examples, commands, rules
 
 ****
 
@@ -222,25 +232,25 @@ iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
 #### Block an IP Address
 
 ```bash
-iptables -A INPUT -s 15.15.15.51 -j DROP
+iptables -A INPUT -s 192.168.252.10 -j DROP
 ```
 
 #### Block and IP Address and Reject
 
 ```bash
-iptables -A INPUT -s 15.15.15.51 -j REJECT
+iptables -A INPUT -s 192.168.252.10 -j REJECT
 ```
 
 #### Block Connections to a Network Interface
 
 ```bash
-iptables -A INPUT -i eth0 -s 15.15.15.51 -j DROP
+iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
 ```
 
 #### Block Connections to a Network Interface
 
 ```bash
-iptables -A INPUT -i eth0 -s 15.15.15.51 -j DROP
+iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
 ```
 
 #### Allow All Incoming SSH
@@ -253,7 +263,7 @@ iptables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEP
 #### Allow Incoming SSH from Specific IP address or subnet
 
 ```bash
-iptables -A INPUT -p tcp -s 15.15.15.0/24 --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p tcp -s 192.168.240.0/24 --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 ```
 
@@ -267,7 +277,7 @@ iptables -A INPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 #### Allow Incoming Rsync from Specific IP Address or Subnet
 
 ```bash
-iptables -A INPUT -p tcp -s 15.15.15.0/24 --dport 873 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p tcp -s 192.168.240.0/24 --dport 873 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 873 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 ```
 
@@ -295,7 +305,7 @@ iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate ES
 #### Allow MySQL from Specific IP Address or Subnet
 
 ```bash
-iptables -A INPUT -p tcp -s 15.15.15.0/24 --dport 3306 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p tcp -s 192.168.240.0/24 --dport 3306 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 3306 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 ```
 
@@ -309,7 +319,7 @@ iptables -A OUTPUT -o eth1 -p tcp --sport 3306 -m conntrack --ctstate ESTABLISHE
 #### PostgreSQL from Specific IP Address or Subnet
 
 ```bash
-iptables -A INPUT -p tcp -s 15.15.15.0/24 --dport 5432 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p tcp -s 192.168.240.0/24 --dport 5432 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 5432 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 ```
 
