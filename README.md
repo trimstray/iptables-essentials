@@ -30,7 +30,7 @@
 - **[Shorewall](http://shorewall.org/)**
 - **[Firewalld](https://firewalld.org/)**
 - **[FireHOL](https://github.com/firehol/firehol)**
-
+- **[UFW](Uncomplicated Firewall)**
 
 ### Iptables Rules
 
