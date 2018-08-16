@@ -1,4 +1,4 @@
-<h2 align="center">Iptables Essentials: Common Firewall Rules and Commands (more than 45)</h2>
+<h2 align="center">Iptables Essentials: Common Firewall Rules and Commands</h2>
 
 <br>
 
@@ -38,6 +38,7 @@ Found on the Internet - All in One List.
 ## Table Of Content
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
+- [Manuals/Howtos/Tutorials](#manuals-howtos-tutorials)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
   * [List out all of the active iptables rules with verbose](#list-out-all-of-the-active-iptables-rules-with-verbose)
@@ -91,10 +92,20 @@ Found on the Internet - All in One List.
 
 ### Tools to help you configure Iptables
 
-- **[Shorewall](http://shorewall.org/)**
-- **[Firewalld](https://firewalld.org/)**
-- **[FireHOL](https://github.com/firehol/firehol)**
-- **[UFW](https://wiki.ubuntu.com/UncomplicatedFirewall)**
+<p>
+&nbsp;&nbsp;:small_orange_diamond: <a href="http://shorewall.org/"><b>Shorewall</b></a> - advanced gateway/firewall configuration tool for GNU/Linux.<br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://firewalld.org/"><b>Firewalld</b></a> - provides a dynamically managed firewall.<br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://wiki.ubuntu.com/UncomplicatedFirewall"><b>UFW</b></a> - default firewall configuration tool for Ubuntu.<br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://github.com/firehol/firehol"><b>FireHOL</b></a> - offer simple and powerful configuration for all Linux firewall and traffic shaping requirements.<br>
+</p>
+
+### Manuals/Howtos/Tutorials
+
+<p>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://major.io/2010/04/12/best-practices-iptables/"><b>Best practices: iptables - by Major Hayden</b></a><br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://www.booleanworld.com/depth-guide-iptables-linux-firewall/"><b>An In-Depth Guide to Iptables, the Linux Firewall</b></a><br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://linuxgazette.net/108/odonovan.html"><b>Advanced Features of netfilter/iptables</b></a><br>
+</p>
 
 ### Iptables Rules
 
