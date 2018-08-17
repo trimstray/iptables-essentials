@@ -419,7 +419,7 @@ done
 #### Log and Drop Packets
 
 ```bash
-ptables -A INPUT -i eth1 -s 10.0.0.0/8 -j LOG --log-prefix "IP_SPOOF A: "
+iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j LOG --log-prefix "IP_SPOOF A: "
 iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP
 ```
 
