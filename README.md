@@ -39,8 +39,11 @@ Found on the Internet - All in One List.
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
 - [Manuals/Howtos/Tutorials](#manuals-howtos-tutorials)
+- [How it works?](#how-it-works)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
+      - [Debian Based](#debian-based)
+      - [RedHat Based](#redhat-based)
   * [List out all of the active iptables rules with verbose](#list-out-all-of-the-active-iptables-rules-with-verbose)
   * [List out all of the active iptables rules with numeric lines and verbose](#list-out-all-of-the-active-iptables-rules-with-numeric-lines-and-verbose)
   * [Print out all of the active iptables rules](#print-out-all-of-the-active-iptables-rules)
@@ -87,6 +90,13 @@ Found on the Internet - All in One List.
   * [Log and Drop Packets with Limited Number of Log Entries](#log-and-drop-packets-with-limited-number-of-log-entries)
   * [Drop or Accept Traffic From Mac Address](#drop-or-accept-traffic-from-mac-address)
   * [Block or Allow ICMP Ping Request](#block-or-allow-icmp-ping-request)
+  * [Specifying Multiple Ports with `multiport`](#specifying-multiple-ports-with--multiport-)
+  * [Load Balancing with `random*` or `nth*`](#load-balancing-with--random---or--nth--)
+  * [Restricting the Number of Connections with `limit` and `iplimit*`](#restricting-the-number-of-connections-with--limit--and--iplimit--)
+  * [Maintaining a List of recent Connections to Match Against](#maintaining-a-list-of-recent-connections-to-match-against)
+  * [Matching Against a `string*` in a Packet's Data Payload](#matching-against-a--string---in-a-packet-s-data-payload)
+  * [Time-based Rules with `time*`](#time-based-rules-with--time--)
+  * [Packet Matching Based on TTL Values](#packet-matching-based-on-ttl-values)
 
 ****
 
@@ -105,6 +115,14 @@ Found on the Internet - All in One List.
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://major.io/2010/04/12/best-practices-iptables/"><b>Best practices: iptables - by Major Hayden</b></a><br>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://www.booleanworld.com/depth-guide-iptables-linux-firewall/"><b>An In-Depth Guide to Iptables, the Linux Firewall</b></a><br>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://linuxgazette.net/108/odonovan.html"><b>Advanced Features of netfilter/iptables</b></a><br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables"><b>Linux Firewalls Using iptables</b></a><br>
+</p>
+
+### How it works?
+
+<p align="center">
+    <img src="https://github.com/trimstray/iptables-essentials/blob/master/doc/img/iptables-packet-flow-ng.png"
+        alt="Master">
 </p>
 
 ### Iptables Rules
@@ -449,4 +467,72 @@ iptables -A INPUT -p tcp --destination-port 22 -m mac --mac-source 00:0F:EA:91:0
 ```bash
 iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
 iptables -A INPUT -i eth1 -p icmp --icmp-type echo-request -j DROP
+```
+
+#### Specifying Multiple Ports with `multiport`
+
+```bash
+iptables -A INPUT -i eth0 -p tcp -m state --state NEW -m multiport --dports ssh,smtp,http,https -j ACCEPT
+```
+
+#### Load Balancing with `random*` or `nth*`
+
+```bash
+_ips=("172.31.250.10" "172.31.250.11" "172.31.250.12" "172.31.250.13")
+
+for ip in "${_ips[@]}" ; do
+iptables -A PREROUTING -i eth0 -p tcp --dport 80 -m state --state NEW -m nth --counter 0 --every 4 --packet 0 \
+    -j DNAT --to-destination ${ip}:80
+done
+```
+
+or
+
+```bash
+_ips=("172.31.250.10" "172.31.250.11" "172.31.250.12" "172.31.250.13")
+
+for ip in "${_ips[@]}" ; do
+iptables -A PREROUTING -i eth0 -p tcp --dport 80 -m state --state NEW -m random --average 25 \
+    -j DNAT --to-destination ${ip}:80
+done
+```
+
+#### Restricting the Number of Connections with `limit` and `iplimit*`
+
+```bash
+iptables -A FORWARD -m state --state NEW -p tcp -m multiport --dport http,https -o eth0 -i eth1 \
+    -m limit --limit 20/hour --limit-burst 5 -j ACCEPT
+```
+
+or
+
+```bash
+iptables -A INPUT -p tcp -m state --state NEW --dport http -m iplimit --iplimit-above 5 -j DROP
+```
+
+#### Maintaining a List of recent Connections to Match Against
+
+```bash
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 100 -j DROP
+iptables -A FORWARD -p tcp -i eth0 --dport 443 -m recent --name portscan --set -j DROP
+```
+
+#### Matching Against a `string*` in a Packet's Data Payload
+
+```bash
+iptables -A FORWARD -m string --string '.com' -j DROP
+iptables -A FORWARD -m string --string '.exe' -j DROP
+```
+
+#### Time-based Rules with `time*`
+
+```bash
+iptables -A FORWARD -p tcp -m multiport --dport http,https -o eth0 -i eth1 \
+    -m time --timestart 21:30 --timestop 22:30 --days Mon,Tue,Wed,Thu,Fri -j ACCEPT
+```
+
+#### Packet Matching Based on TTL Values
+
+```bash
+iptables -A INPUT -s 1.2.3.4 -m ttl --ttl-lt 40 -j REJECT
 ```
