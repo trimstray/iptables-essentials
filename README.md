@@ -30,6 +30,7 @@ Found on the Internet - All in One List.
 ## :ballot_box_with_check: Todo
 
 - [ ] Add useful Iptables configuration examples
+- [ ] Add useful Kernel Settings (sysctl) configuration examples
 - [ ] Add links to useful external resources
 - [ ] Add advanced configuration examples, commands, rules
 
@@ -39,7 +40,7 @@ Found on the Internet - All in One List.
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
 - [Manuals/Howtos/Tutorials](#manuals-howtos-tutorials)
-- [How it works?](#how-it-works)
+- [How it works?](#how-it-works-)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
       - [Debian Based](#debian-based)
@@ -97,6 +98,17 @@ Found on the Internet - All in One List.
   * [Matching Against a `string*` in a Packet's Data Payload](#matching-against-a--string---in-a-packet-s-data-payload)
   * [Time-based Rules with `time*`](#time-based-rules-with--time--)
   * [Packet Matching Based on TTL Values](#packet-matching-based-on-ttl-values)
+  * [Protection against port scanning](#protection-against-port-scanning)
+  * [SSH brute-force protection](#ssh-brute-force-protection)
+  * [Syn-flood protection](#syn-flood-protection)
+    + [Mitigating SYN Floods With SYNPROXY](#mitigating-syn-floods-with-synproxy)
+  * [Block New Packets That Are Not SYN](#block-new-packets-that-are-not-syn)
+  * [Force Fragments packets check](#force-fragments-packets-check)
+  * [XMAS packets](#xmas-packets)
+  * [Drop all NULL packets](#drop-all-null-packets)
+  * [Block Uncommon MSS Values](#block-uncommon-mss-values)
+  * [Block Packets With Bogus TCP Flags](#block-packets-with-bogus-tcp-flags)
+  * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets--spoofing-)
 
 ****
 
@@ -116,6 +128,7 @@ Found on the Internet - All in One List.
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://www.booleanworld.com/depth-guide-iptables-linux-firewall/"><b>An In-Depth Guide to Iptables, the Linux Firewall</b></a><br>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://linuxgazette.net/108/odonovan.html"><b>Advanced Features of netfilter/iptables</b></a><br>
 &nbsp;&nbsp;:small_orange_diamond: <a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables"><b>Linux Firewalls Using iptables</b></a><br>
+&nbsp;&nbsp;:small_orange_diamond: <a href="https://serverfault.com/questions/696182/debugging-iptables-and-common-firewall-pitfalls"><b>Debugging iptables and common firewall pitfalls?</b></a><br>
 </p>
 
 ### How it works?
@@ -481,7 +494,7 @@ iptables -A INPUT -i eth0 -p tcp -m state --state NEW -m multiport --dports ssh,
 _ips=("172.31.250.10" "172.31.250.11" "172.31.250.12" "172.31.250.13")
 
 for ip in "${_ips[@]}" ; do
-iptables -A PREROUTING -i eth0 -p tcp --dport 80 -m state --state NEW -m nth --counter 0 --every 4 --packet 0 \
+  iptables -A PREROUTING -i eth0 -p tcp --dport 80 -m state --state NEW -m nth --counter 0 --every 4 --packet 0 \
     -j DNAT --to-destination ${ip}:80
 done
 ```
@@ -492,7 +505,7 @@ or
 _ips=("172.31.250.10" "172.31.250.11" "172.31.250.12" "172.31.250.13")
 
 for ip in "${_ips[@]}" ; do
-iptables -A PREROUTING -i eth0 -p tcp --dport 80 -m state --state NEW -m random --average 25 \
+  iptables -A PREROUTING -i eth0 -p tcp --dport 80 -m state --state NEW -m random --average 25 \
     -j DNAT --to-destination ${ip}:80
 done
 ```
@@ -535,4 +548,109 @@ iptables -A FORWARD -p tcp -m multiport --dport http,https -o eth0 -i eth1 \
 
 ```bash
 iptables -A INPUT -s 1.2.3.4 -m ttl --ttl-lt 40 -j REJECT
+```
+
+#### Protection against port scanning
+
+```bash
+iptables -N port-scanning
+iptables -A port-scanning -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 1/s --limit-burst 2 -j RETURN
+iptables -A port-scanning -j DROP
+```
+
+#### SSH brute-force protection
+
+```bash
+iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --set
+iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 -j DROP
+```
+
+#### Syn-flood protection
+
+```bash
+iptables -N syn_flood
+
+iptables -A INPUT -p tcp --syn -j syn_flood
+iptables -A syn_flood -m limit --limit 1/s --limit-burst 3 -j RETURN
+iptables -A syn_flood -j DROP
+
+iptables -A INPUT -p icmp -m limit --limit  1/s --limit-burst 1 -j ACCEPT
+
+iptables -A INPUT -p icmp -m limit --limit 1/s --limit-burst 1 -j LOG --log-prefix PING-DROP:
+iptables -A INPUT -p icmp -j DROP
+
+iptables -A OUTPUT -p icmp -j ACCEPT
+```
+
+##### Mitigating SYN Floods With SYNPROXY
+
+```bash
+iptables -t raw -A PREROUTING -p tcp -m tcp --syn -j CT --notrack
+iptables -A INPUT -p tcp -m tcp -m conntrack --ctstate INVALID,UNTRACKED -j SYNPROXY --sack-perm --timestamp --wscale 7 --mss 1460
+iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+```
+
+#### Block New Packets That Are Not SYN
+
+```bash
+iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+```
+
+or
+
+```bash
+iptables -t mangle -A PREROUTING -p tcp ! --syn -m conntrack --ctstate NEW -j DROP
+```
+
+#### Force Fragments packets check
+
+```bash
+iptables -A INPUT -f -j DROP
+```
+
+#### XMAS packets
+
+```bash
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+```
+
+#### Drop all NULL packets
+
+```bash
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+```
+
+#### Block Uncommon MSS Values
+
+```bash
+iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
+```
+
+#### Block Packets With Bogus TCP Flags
+
+```bash
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+```
+
+#### Block Packets From Private Subnets (Spoofing)
+
+```bash
+_subnets=("224.0.0.0/3" "169.254.0.0/16" "172.16.0.0/12" "192.0.2.0/24" "192.168.0.0/16" "10.0.0.0/8" "0.0.0.0/8" "240.0.0.0/5")
+
+for _sub in "${_subnets[@]}" ; do
+  iptables -t mangle -A PREROUTING -s "$_sub" -j DROP
+done
+iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP
 ```
