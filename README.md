@@ -85,7 +85,6 @@ Found on the Internet - All in One List.
   * [Allow All Incoming POP3](#allow-all-incoming-pop3)
   * [Allow All Incoming POP3S](#allow-all-incoming-pop3s)
   * [Drop Private Network Address On Public Interface](#drop-private-network-address-on-public-interface)
-  * [Only Block Incoming Traffic](#only-block-incoming-traffic)
   * [Drop All Outgoing to Facebook Networks](#drop-all-outgoing-to-facebook-networks)
   * [Log and Drop Packets](#log-and-drop-packets)
   * [Log and Drop Packets with Limited Number of Log Entries](#log-and-drop-packets-with-limited-number-of-log-entries)
@@ -419,15 +418,6 @@ iptables -A OUTPUT -p tcp --sport 995 -m conntrack --ctstate ESTABLISHED -j ACCE
 ```bash
 iptables -A INPUT -i eth1 -s 192.168.0.0/24 -j DROP
 iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP
-```
-
-#### Only Block Incoming Traffic
-
-```bash
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
-iptables -A INPUT -m state --state NEW,ESTABLISHED -j ACCEPT
 ```
 
 #### Drop All Outgoing to Facebook Networks
