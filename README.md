@@ -39,8 +39,8 @@ Found on the Internet - All in One List.
 ## Table Of Content
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
-- [Manuals/Howtos/Tutorials](#manuals-howtos-tutorials)
-- [How it works?](#how-it-works-)
+- [Manuals/Howtos/Tutorials](#manualshowtostutorials)
+- [How it works?](#how-it-works)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
       - [Debian Based](#debian-based)
