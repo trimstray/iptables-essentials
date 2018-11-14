@@ -65,7 +65,6 @@ Found on the Internet - All in One List.
   * [Drop Invalid Packets](#drop-invalid-packets)
   * [Block an IP Address](#block-an-ip-address)
   * [Block and IP Address and Reject](#block-and-ip-address-and-reject)
-  * [Block Connections to a Network Interface](#block-connections-to-a-network-interface)
   * [Block Connections to a Network Interface](#block-connections-to-a-network-interface-1)
   * [Allow All Incoming SSH](#allow-all-incoming-ssh)
   * [Allow Incoming SSH from Specific IP address or subnet](#allow-incoming-ssh-from-specific-ip-address-or-subnet)
@@ -282,12 +281,6 @@ iptables -A INPUT -s 192.168.252.10 -j DROP
 
 ```bash
 iptables -A INPUT -s 192.168.252.10 -j REJECT
-```
-
-#### Block Connections to a Network Interface
-
-```bash
-iptables -A INPUT -i eth0 -s 192.168.252.10 -j DROP
 ```
 
 #### Block Connections to a Network Interface
