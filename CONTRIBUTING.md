@@ -6,10 +6,10 @@ If you would like to support this project, you have an interesting idea how to i
 
 Moving forward all commits to this project must include a "signed-off-by" line indicating the name and email address of the contributor signing off on the change. To enable signatures add the following lines to `.git/hooks/prepare-commit-msg` :
 
-``````
+```
 SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/- signed-off-by: \1/p')
 grep -qs "^$SOB" "$1" || echo "$SOB" >> "$1"
-``````
+```
 
 ## Pull requests
 
