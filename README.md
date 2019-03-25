@@ -132,7 +132,7 @@ Found on the Internet - All in One List.
 ### How it works?
 
 <p align="center">
-    <img src="https://github.com/trimstray/iptables-essentials/blob/master/doc/img/iptables-packet-flow-ng.png"
+    <img src="https://github.com/trimstray/iptables-essentials/blob/master/static/img/iptables-packet-flow-ng.png"
         alt="Master">
 </p>
 
