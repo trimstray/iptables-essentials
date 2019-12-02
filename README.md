@@ -25,10 +25,6 @@
 
 <br>
 
-<p align="center">
-Found on the Internet - All in One List.
-</p>
-
 ## :ballot_box_with_check: Todo
 
 - [ ] Add useful Iptables configuration examples
@@ -38,7 +34,7 @@ Found on the Internet - All in One List.
 
 ****
 
-## Table Of Content
+## Table of Contents
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
 - [Manuals/Howtos/Tutorials](#manualshowtostutorials)
