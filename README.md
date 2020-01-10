@@ -25,7 +25,7 @@
 
 <br>
 
-## :ballot_box_with_check: Todo
+## :ballot_box_with_check: TODO
 
 - [ ] Add useful Iptables configuration examples
 - [ ] Add links to useful external resources
@@ -52,7 +52,7 @@
   * [To display INPUT or OUTPUT chain rules with numeric lines and verbose](#to-display-input-or-output-chain-rules-with-numeric-lines-and-verbose)
   * [Delete Rule by Chain and Number](#delete-rule-by-chain-and-number)
   * [Delete Rule by Specification](#delete-rule-by-specification)
-  * [Flush All Rules, Delete All Chains, and Accept All](#flush-all-rules--delete-all-chains--and-accept-all)
+  * [Flush All Rules, Delete All Chains, and Accept All](#flush-all-rules-delete-all-chains-and-accept-all)
   * [Flush All Chains](#flush-all-chains)
   * [Flush a Single Chain](#flush-a-single-chain)
   * [Insert Firewall Rules](#insert-firewall-rules)
@@ -63,7 +63,7 @@
   * [Drop Invalid Packets](#drop-invalid-packets)
   * [Block an IP Address](#block-an-ip-address)
   * [Block and IP Address and Reject](#block-and-ip-address-and-reject)
-  * [Block Connections to a Network Interface](#block-connections-to-a-network-interface-1)
+  * [Block Connections to a Network Interface](#block-connections-to-a-network-interface)
   * [Allow All Incoming SSH](#allow-all-incoming-ssh)
   * [Allow Incoming SSH from Specific IP address or subnet](#allow-incoming-ssh-from-specific-ip-address-or-subnet)
   * [Allow Outgoing SSH](#allow-outgoing-ssh)
@@ -87,12 +87,12 @@
   * [Log and Drop Packets with Limited Number of Log Entries](#log-and-drop-packets-with-limited-number-of-log-entries)
   * [Drop or Accept Traffic From Mac Address](#drop-or-accept-traffic-from-mac-address)
   * [Block or Allow ICMP Ping Request](#block-or-allow-icmp-ping-request)
-  * [Specifying Multiple Ports with `multiport`](#specifying-multiple-ports-with--multiport-)
-  * [Load Balancing with `random*` or `nth*`](#load-balancing-with--random---or--nth--)
-  * [Restricting the Number of Connections with `limit` and `iplimit*`](#restricting-the-number-of-connections-with--limit--and--iplimit--)
+  * [Specifying Multiple Ports with `multiport`](#specifying-multiple-ports-with-multiport)
+  * [Load Balancing with `random*` or `nth*`](#load-balancing-with-random-or-nth)
+  * [Restricting the Number of Connections with `limit` and `iplimit*`](#restricting-the-number-of-connections-with-limit-and-iplimit)
   * [Maintaining a List of recent Connections to Match Against](#maintaining-a-list-of-recent-connections-to-match-against)
-  * [Matching Against a `string*` in a Packet's Data Payload](#matching-against-a--string---in-a-packet-s-data-payload)
-  * [Time-based Rules with `time*`](#time-based-rules-with--time--)
+  * [Matching Against a `string*` in a Packet's Data Payload](#matching-against-a-string-in-a-packets-data-payload)
+  * [Time-based Rules with `time*`](#time-based-rules-with-time)
   * [Packet Matching Based on TTL Values](#packet-matching-based-on-ttl-values)
   * [Protection against port scanning](#protection-against-port-scanning)
   * [SSH brute-force protection](#ssh-brute-force-protection)
@@ -104,7 +104,7 @@
   * [Drop all NULL packets](#drop-all-null-packets)
   * [Block Uncommon MSS Values](#block-uncommon-mss-values)
   * [Block Packets With Bogus TCP Flags](#block-packets-with-bogus-tcp-flags)
-  * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets--spoofing-)
+  * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets-spoofing)
 
 ****
 
@@ -129,7 +129,7 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://making.pusher.com/per-ip-rate-limiting-with-iptables/"><b>Per-IP rate limiting with iptables</b></a><br>
 </p>
 
-### Kernel Settings (sysctl) Configuration
+### Useful Kernel Settings (sysctl) Configuration
 
 ```bash
 cat << EOF > /etc/sysctl.d/40-custom.conf
