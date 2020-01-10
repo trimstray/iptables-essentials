@@ -28,7 +28,6 @@
 ## :ballot_box_with_check: Todo
 
 - [ ] Add useful Iptables configuration examples
-- [ ] Add useful Kernel Settings (sysctl) configuration examples
 - [ ] Add links to useful external resources
 - [ ] Add advanced configuration examples, commands, rules
 
@@ -38,6 +37,7 @@
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
 - [Manuals/Howtos/Tutorials](#manualshowtostutorials)
+- [Useful Kernel Settings (sysctl) configuration](#useful-kernel-settings-sysctl-configuration)
 - [How it works?](#how-it-works)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
@@ -128,6 +128,72 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://www.netfilter.org/documentation/HOWTO/netfilter-hacking-HOWTO-4.html"><b>Netfilter Hacking HOWTO</b></a><br>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://making.pusher.com/per-ip-rate-limiting-with-iptables/"><b>Per-IP rate limiting with iptables</b></a><br>
 </p>
+
+### Kernel Settings (sysctl) Configuration
+
+```bash
+cat << EOF > /etc/sysctl.d/40-custom.conf
+
+#---------------------------------------------------------------
+# Disable routing triangulation. Respond to queries out
+# the same interface, not another. Helps to maintain state
+# Also protects against IP spoofing
+#---------------------------------------------------------------
+
+net/ipv4/conf/all/rp_filter = 1
+
+
+#---------------------------------------------------------------
+# Enable logging of packets with malformed IP addresses
+#---------------------------------------------------------------
+
+net/ipv4/conf/all/log_martians = 1
+
+
+#---------------------------------------------------------------
+# Disable redirects
+#---------------------------------------------------------------
+
+net/ipv4/conf/all/send_redirects = 0
+
+
+#---------------------------------------------------------------
+# Disable source routed packets
+#---------------------------------------------------------------
+
+net/ipv4/conf/all/accept_source_route = 0
+
+
+#---------------------------------------------------------------
+# Disable acceptance of ICMP redirects
+#---------------------------------------------------------------
+
+net/ipv4/conf/all/accept_redirects = 0
+
+
+#---------------------------------------------------------------
+# Turn on protection from Denial of Service (DOS) attacks
+#---------------------------------------------------------------
+
+net/ipv4/tcp_syncookies = 1
+
+
+#---------------------------------------------------------------
+# Disable responding to ping broadcasts
+#---------------------------------------------------------------
+
+net/ipv4/icmp_echo_ignore_broadcasts = 1
+
+
+#---------------------------------------------------------------
+# Enable IP routing. Required if your firewall is protecting a
+# network, NAT included
+#---------------------------------------------------------------
+
+net/ipv4/ip_forward = 1
+
+EOF
+```
 
 ### How it works?
 
