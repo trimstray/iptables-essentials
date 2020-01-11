@@ -25,10 +25,10 @@
 
 <br>
 
-## :ballot_box_with_check: Todo
+## :ballot_box_with_check: TODO
 
 - [ ] Add useful Iptables configuration examples
-- [ ] Add useful Kernel Settings (sysctl) configuration examples
+- [x] Add useful Kernel Settings (sysctl) configuration
 - [ ] Add links to useful external resources
 - [ ] Add advanced configuration examples, commands, rules
 
@@ -38,6 +38,15 @@
 
 - [Tools to help you configure Iptables](#tools-to-help-you-configure-iptables)
 - [Manuals/Howtos/Tutorials](#manualshowtostutorials)
+- [Useful Kernel Settings (sysctl) configuration](#useful-kernel-settings-sysctl-configuration)
+  * [rp_filter](#rp_filter)
+  * [log_martians](#log_martians)
+  * [send_redirects](#send_redirects)
+  * [accept_source_route](#accept_source_route)
+  * [accept_redirects](#accept_redirects)
+  * [tcp_syncookies](#tcp_syncookies)
+  * [icmp_echo_ignore_broadcasts](#icmp_echo_ignore_broadcasts)
+  * [ip_forward](#ip_forward)
 - [How it works?](#how-it-works)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
@@ -52,7 +61,7 @@
   * [To display INPUT or OUTPUT chain rules with numeric lines and verbose](#to-display-input-or-output-chain-rules-with-numeric-lines-and-verbose)
   * [Delete Rule by Chain and Number](#delete-rule-by-chain-and-number)
   * [Delete Rule by Specification](#delete-rule-by-specification)
-  * [Flush All Rules, Delete All Chains, and Accept All](#flush-all-rules--delete-all-chains--and-accept-all)
+  * [Flush All Rules, Delete All Chains, and Accept All](#flush-all-rules-delete-all-chains-and-accept-all)
   * [Flush All Chains](#flush-all-chains)
   * [Flush a Single Chain](#flush-a-single-chain)
   * [Insert Firewall Rules](#insert-firewall-rules)
@@ -63,7 +72,7 @@
   * [Drop Invalid Packets](#drop-invalid-packets)
   * [Block an IP Address](#block-an-ip-address)
   * [Block and IP Address and Reject](#block-and-ip-address-and-reject)
-  * [Block Connections to a Network Interface](#block-connections-to-a-network-interface-1)
+  * [Block Connections to a Network Interface](#block-connections-to-a-network-interface)
   * [Allow All Incoming SSH](#allow-all-incoming-ssh)
   * [Allow Incoming SSH from Specific IP address or subnet](#allow-incoming-ssh-from-specific-ip-address-or-subnet)
   * [Allow Outgoing SSH](#allow-outgoing-ssh)
@@ -87,12 +96,12 @@
   * [Log and Drop Packets with Limited Number of Log Entries](#log-and-drop-packets-with-limited-number-of-log-entries)
   * [Drop or Accept Traffic From Mac Address](#drop-or-accept-traffic-from-mac-address)
   * [Block or Allow ICMP Ping Request](#block-or-allow-icmp-ping-request)
-  * [Specifying Multiple Ports with `multiport`](#specifying-multiple-ports-with--multiport-)
-  * [Load Balancing with `random*` or `nth*`](#load-balancing-with--random---or--nth--)
-  * [Restricting the Number of Connections with `limit` and `iplimit*`](#restricting-the-number-of-connections-with--limit--and--iplimit--)
+  * [Specifying Multiple Ports with `multiport`](#specifying-multiple-ports-with-multiport)
+  * [Load Balancing with `random*` or `nth*`](#load-balancing-with-random-or-nth)
+  * [Restricting the Number of Connections with `limit` and `iplimit*`](#restricting-the-number-of-connections-with-limit-and-iplimit)
   * [Maintaining a List of recent Connections to Match Against](#maintaining-a-list-of-recent-connections-to-match-against)
-  * [Matching Against a `string*` in a Packet's Data Payload](#matching-against-a--string---in-a-packet-s-data-payload)
-  * [Time-based Rules with `time*`](#time-based-rules-with--time--)
+  * [Matching Against a `string*` in a Packet's Data Payload](#matching-against-a-string-in-a-packets-data-payload)
+  * [Time-based Rules with `time*`](#time-based-rules-with-time)
   * [Packet Matching Based on TTL Values](#packet-matching-based-on-ttl-values)
   * [Protection against port scanning](#protection-against-port-scanning)
   * [SSH brute-force protection](#ssh-brute-force-protection)
@@ -104,7 +113,7 @@
   * [Drop all NULL packets](#drop-all-null-packets)
   * [Block Uncommon MSS Values](#block-uncommon-mss-values)
   * [Block Packets With Bogus TCP Flags](#block-packets-with-bogus-tcp-flags)
-  * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets--spoofing-)
+  * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets-spoofing)
 
 ****
 
@@ -128,6 +137,114 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://www.netfilter.org/documentation/HOWTO/netfilter-hacking-HOWTO-4.html"><b>Netfilter Hacking HOWTO</b></a><br>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://making.pusher.com/per-ip-rate-limiting-with-iptables/"><b>Per-IP rate limiting with iptables</b></a><br>
 </p>
+
+### Useful Kernel Settings (sysctl) Configuration
+
+##### rp_filter
+
+  > _Disable routing triangulation. Respond to queries out the same interface, not another. Also protects against IP spoofing._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/conf/all/rp_filter = 1
+EOF
+```
+
+- [rp_filter and LPIC-3 Linux Security](https://www.theurbanpenguin.com/rp_filter-and-lpic-3-linux-security/)
+- [Linux kernel rp_filter settings (Reverse path filtering)](https://www.slashroot.in/linux-kernel-rpfilter-settings-reverse-path-filtering)
+- [Reverse Path Filtering](http://tldp.org/HOWTO/Adv-Routing-HOWTO/lartc.kernel.rpf.html)
+
+##### log_martians
+
+  > _Enable logging of packets with malformed IP addresses._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/conf/all/log_martians = 1
+EOF
+```
+
+- [What is the usefulness of logging of martians packet?](https://serverfault.com/questions/570980/what-is-the-usefulness-of-logging-of-martians-packet-e-g-net-ipv4-conf-all-lo)
+
+##### send_redirects
+
+  > _Disables sending of all IPv4 ICMP redirected packets on all interfaces._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/conf/all/send_redirects = 0
+EOF
+```
+
+- [Disable source routing](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sect-security_guide-server_security-disable-source-routing)
+- [What are ICMP redirects and should they be blocked?](https://askubuntu.com/questions/118273/what-are-icmp-redirects-and-should-they-be-blocked)
+
+##### accept_source_route
+
+  > _Disable source routed packets (packets with the Strict Source Route (SSR) or Loose Source Routing (LSR) option set)._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/conf/all/accept_source_route = 0
+EOF
+```
+
+- [Disable source routing](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sect-security_guide-server_security-disable-source-routing)
+- [The system must not accept IPv4 source-routed packets by default.](https://www.stigviewer.com/stig/red_hat_enterprise_linux_6/2017-12-08/finding/V-38529)
+
+##### accept_redirects
+
+  > _Disable acceptance of ICMP redirects._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/conf/all/accept_redirects = 0
+EOF
+```
+
+- [What are ICMP redirects and should they be blocked?](https://askubuntu.com/questions/118273/what-are-icmp-redirects-and-should-they-be-blocked)
+- [The Red Hat Enterprise Linux operating system must ignore Internet Protocol version 4 (IPv4) Internet Control Message Protocol (ICMP) redirect messages.](https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2018-11-28/finding/V-73175)
+
+##### tcp_syncookies
+
+  > _Turn on SYN-flood protections (protection from Denial of Service (DOS) attacks)._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/tcp_syncookies = 1
+EOF
+```
+
+- [Hardening your TCP/IP Stack Against SYN Floods](https://www.ndchost.com/wiki/server-administration/hardening-tcpip-syn-flood)
+- [Linux: Turn On TCP SYN Cookie Protection](https://www.cyberciti.biz/faq/enable-tcp-syn-cookie-protection/)
+- [Better alternative for tcp_syncookies in Linux](https://serverfault.com/questions/705504/better-alternative-for-tcp-syncookies-in-linux)
+
+##### icmp_echo_ignore_broadcasts
+
+  > _Disable responding to ping broadcasts._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/icmp_echo_ignore_broadcasts = 1
+EOF
+```
+
+- [What is ICMP broadcast good for?](https://superuser.com/questions/306065/what-is-icmp-broadcast-good-for)
+- [The system must not respond to ICMPv4 sent to a broadcast address.](https://www.stigviewer.com/stig/red_hat_enterprise_linux_6/2018-11-28/finding/V-38535)
+
+##### ip_forward
+
+  > _Enable IP routing. Required if your firewall is protecting a network, NAT included._
+
+```bash
+cat << EOF >> /etc/sysctl.d/40-custom.conf
+net/ipv4/ip_forward = 1
+EOF
+```
+
+- [Introduction to routers](http://linux-training.be/security/ch10.html)
+- [How to Enable IP Forwarding in Linux](http://www.ducea.com/2006/08/01/how-to-enable-ip-forwarding-in-linux/)
+- [What is kernel ip forwarding?](https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding)
 
 ### How it works?
 
