@@ -30,7 +30,7 @@
 - [ ] Add useful Iptables configuration examples
 - [x] Add useful Kernel Settings (sysctl) configuration
 - [ ] Add links to useful external resources
-- [ ] Add advanced configuration examples, commands, rules
+- [x] Add advanced configuration examples, commands, rules
 
 ****
 
@@ -114,6 +114,8 @@
   * [Block Uncommon MSS Values](#block-uncommon-mss-values)
   * [Block Packets With Bogus TCP Flags](#block-packets-with-bogus-tcp-flags)
   * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets-spoofing)
+- [Advanced configuration examples](#advanced-configuration-examples)
+  * [Packet handling in Python using NFQUEUE target](#packet-handling-in-python-using-nfqueue-target)
 
 ****
 
@@ -754,3 +756,31 @@ for _sub in "${_subnets[@]}" ; do
 done
 iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP
 ```
+
+### Advanced configuration examples
+
+#### Packet handling in Python using NFQUEUE target
+
+```bash
+iptables -A INPUT -j NFQUEUE --queue-num 1
+```
+
+```python
+#!/usr/bin/python3
+
+from netfilterqueue import NetfilterQueue
+from scapy.all import *
+
+def packetanalyzer(pkt):
+    ip=IP(pkt.get_payload())
+    if(ip.src=="192.168.122.1"):
+        print(f"New packet from {ip.src}")
+        pkt.accept()
+    else:
+	pkt.drop()
+
+nfqueue=NetfilterQueue()
+nfqueue.bind(1, packetanalyzer)
+nfqueue.run()
+```
+
