@@ -117,6 +117,7 @@
 - [Advanced configuration examples](#advanced-configuration-examples)
   * [Packet handling in Python using NFQUEUE target](#packet-handling-in-python-using-nfqueue-target)
     - [ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else](#accept-all-packets-from-specific-source-on-filterinput-and-drop-everything-else)
+    - [Write your own port knocking script to secure ssh access](#write-your-own-port-knocking-script-to-secure-ssh-access)
 
 ****
 
@@ -791,5 +792,57 @@ def packetanalyzer(pkt):
 nfqueue=NetfilterQueue()
 nfqueue.bind(1, packetanalyzer)
 nfqueue.run()
+```
+
+#### Write your own port knocking script to secure ssh access
+
+  > _DROP all ssh requests and send secret port requests to user-space with NFQUEUE target._
+
+```bash
+iptables -t filter -I INPUT -p tcp --dport 22 -j DROP
+iptables -t raw -I PREROUTING -p tcp --sport 65534 --dport 65535 -j NFQUEUE --queue-num 1
+```
+
+  > _This script capture packet from netfilter queue 1 and check SOURCEPORT and SECRETPORT for port knocking and allow source to connect to ssh for EXPIRETIME, default is 30 minutes.
+  
+```python
+#!/usr/bin/python3
+
+from os	import system
+from netfilterqueue import NetfilterQueue
+from scapy.layers.inet import IP
+from time import time
+
+SOURCEPORT=65534
+SECRETPORT=65535
+EXPIRETIME=30
+ALLOWED={}
+
+def portknocking(pkt):
+    packet=IP(pkt.get_payload())
+    currtime=time()
+    for item in list(ALLOWED):
+        if(currtime-ALLOWED[item] >= EXPIRETIME*60):
+            del ALLOWED[item]
+    if(packet.sport==SOURCEPORT and packet.dport==SECRETPORT and packet.src not in ALLOWED):
+        print(f"Port {packet.dport} knocked by {packet.src}:{packet.sport}")
+        system(f"iptables -I INPUT -p tcp --dport 22 -s {packet.src} -j ACCEPT")
+        system(f"echo 'iptables -D INPUT -p tcp --dport 22 -s {packet.src} -j ACCEPT' | at now + {EXPIRETIME} minutes")
+        ALLOWED[packet.src]=time()
+        pkt.drop()
+
+nfqueue=NetfilterQueue()
+nfqueue.bind(1, portknocking)
+
+try:
+    nfqueue.run()
+except KeyboardInterrupt:
+    print("\nExit with Keyboard Interrupt")
+```
+
+  > _To knocking port and allow ssh connections from your computer just execute this command:_
+
+```bash
+nc -p 65534 SERVER 65535
 ```
 
