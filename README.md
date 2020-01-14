@@ -116,7 +116,7 @@
   * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets-spoofing)
 - [Advanced configuration examples](#advanced-configuration-examples)
   * [Packet handling in Python using NFQUEUE target](#packet-handling-in-python-using-nfqueue-target)
-    - [ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else](#accept-all-packets-from-specific-source-on-filter-input-and-drop-everything-else)
+    - [ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else](#accept-all-packets-from-specific-source-on-filterinput-and-drop-everything-else)
 
 ****
 
