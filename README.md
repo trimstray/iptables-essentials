@@ -116,6 +116,7 @@
   * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets-spoofing)
 - [Advanced configuration examples](#advanced-configuration-examples)
   * [Packet handling in Python using NFQUEUE target](#packet-handling-in-python-using-nfqueue-target)
+    - [ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else](#accept-all-packets-from-specific-source-on-filter-input-and-drop-everything-else)
 
 ****
 
@@ -757,14 +758,22 @@ done
 iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP
 ```
 
-### Advanced configuration examples
+## Advanced configuration examples
 
-#### Packet handling in Python using NFQUEUE target
+### Packet handling in Python using NFQUEUE target
+
+  > _This target passes the packet to userspace using the nfnetlink_queue handler. The packet is put into the queue identified by its 16-bit queue number. Userspace can inspect and modify the packet if desired. Userspace must then drop or reinject the packet into the kernel._
+
+#### ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else
+
+  > _This rule forwards all filter:INPUT packets to queue 1 with NFQUEUE target._
 
 ```bash
 iptables -A INPUT -j NFQUEUE --queue-num 1
 ```
 
+  > _Script to bind to netfilter queue 1 and handle packets._
+  
 ```python
 #!/usr/bin/python3
 
