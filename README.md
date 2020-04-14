@@ -50,8 +50,8 @@
 - [How it works?](#how-it-works)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
-      - [Debian Based](#debian-based)
-      - [RedHat Based](#redhat-based)
+    - [Debian Based](#debian-based)
+    - [RedHat Based](#redhat-based)
   * [List out all of the active iptables rules with verbose](#list-out-all-of-the-active-iptables-rules-with-verbose)
   * [List out all of the active iptables rules with numeric lines and verbose](#list-out-all-of-the-active-iptables-rules-with-numeric-lines-and-verbose)
   * [Print out all of the active iptables rules](#print-out-all-of-the-active-iptables-rules)
@@ -106,7 +106,7 @@
   * [Protection against port scanning](#protection-against-port-scanning)
   * [SSH brute-force protection](#ssh-brute-force-protection)
   * [Syn-flood protection](#syn-flood-protection)
-    + [Mitigating SYN Floods With SYNPROXY](#mitigating-syn-floods-with-synproxy)
+    - [Mitigating SYN Floods With SYNPROXY](#mitigating-syn-floods-with-synproxy)
   * [Block New Packets That Are Not SYN](#block-new-packets-that-are-not-syn)
   * [Force Fragments packets check](#force-fragments-packets-check)
   * [XMAS packets](#xmas-packets)
@@ -116,10 +116,12 @@
   * [Block Packets From Private Subnets (Spoofing)](#block-packets-from-private-subnets-spoofing)
 - [Advanced configuration examples](#advanced-configuration-examples)
   * [Packet handling in Python using NFQUEUE target](#packet-handling-in-python-using-nfqueue-target)
+    - [ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else](#accept-all-packets-from-specific-source-on-filterinput-and-drop-everything-else)
+    - [Write your own port knocking script to secure ssh access](#write-your-own-port-knocking-script-to-secure-ssh-access)
 
 ****
 
-### Tools to help you configure Iptables
+## Tools to help you configure Iptables
 
 <p>
 &nbsp;&nbsp;:small_orange_diamond: <a href="http://shorewall.org/"><b>Shorewall</b></a> - advanced gateway/firewall configuration tool for GNU/Linux.<br>
@@ -128,7 +130,7 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://github.com/firehol/firehol"><b>FireHOL</b></a> - offer simple and powerful configuration for all Linux firewall and traffic shaping requirements.<br>
 </p>
 
-### Manuals/Howtos/Tutorials
+## Manuals/Howtos/Tutorials
 
 <p>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://major.io/2010/04/12/best-practices-iptables/"><b>Best practices: iptables - by Major Hayden</b></a><br>
@@ -140,7 +142,7 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://making.pusher.com/per-ip-rate-limiting-with-iptables/"><b>Per-IP rate limiting with iptables</b></a><br>
 </p>
 
-### Useful Kernel Settings (sysctl) Configuration
+## Useful Kernel Settings (sysctl) Configuration
 
 ##### rp_filter
 
@@ -248,14 +250,14 @@ EOF
 - [How to Enable IP Forwarding in Linux](http://www.ducea.com/2006/08/01/how-to-enable-ip-forwarding-in-linux/)
 - [What is kernel ip forwarding?](https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding)
 
-### How it works?
+## How it works?
 
 <p align="center">
     <img src="https://github.com/trimstray/iptables-essentials/blob/master/static/img/iptables-packet-flow-ng.png"
         alt="Master">
 </p>
 
-### Iptables Rules
+## Iptables Rules
 
 #### Saving Rules
 
@@ -757,14 +759,22 @@ done
 iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP
 ```
 
-### Advanced configuration examples
+## Advanced configuration examples
 
-#### Packet handling in Python using NFQUEUE target
+### Packet handling in Python using NFQUEUE target
+
+  > _This target passes the packet to userspace using the nfnetlink_queue handler. The packet is put into the queue identified by its 16-bit queue number. Userspace can inspect and modify the packet if desired. Userspace must then drop or reinject the packet into the kernel._
+
+#### ACCEPT all packets from specific source on (filter:INPUT) and DROP everything else
+
+  > _This rule forwards all filter:INPUT packets to queue 1 with NFQUEUE target._
 
 ```bash
 iptables -A INPUT -j NFQUEUE --queue-num 1
 ```
 
+  > _Script to bind to netfilter queue 1 and handle packets._
+  
 ```python
 #!/usr/bin/python3
 
@@ -784,3 +794,54 @@ nfqueue.bind(1, packetanalyzer)
 nfqueue.run()
 ```
 
+#### Write your own port knocking script to secure ssh access
+
+  > _DROP all ssh requests and send secret port requests to user-space with NFQUEUE target._
+
+```bash
+iptables -t filter -I INPUT -p tcp --dport 22 -j DROP
+iptables -t raw -I PREROUTING -p tcp --sport 65534 --dport 65535 -j NFQUEUE --queue-num 1
+```
+
+  > _This script capture packet from netfilter queue 1 and check SOURCEPORT and SECRETPORT for port knocking and allow source to connect to ssh for EXPIRETIME, default is 30 minutes.
+  
+```python
+#!/usr/bin/python3
+
+from os	import system
+from netfilterqueue import NetfilterQueue
+from scapy.layers.inet import IP
+from time import time
+
+SOURCEPORT=65534
+SECRETPORT=65535
+EXPIRETIME=30
+ALLOWED={}
+
+def portknocking(pkt):
+    packet=IP(pkt.get_payload())
+    currtime=time()
+    for item in list(ALLOWED):
+        if(currtime-ALLOWED[item] >= EXPIRETIME*60):
+            del ALLOWED[item]
+    if(packet.sport==SOURCEPORT and packet.dport==SECRETPORT and packet.src not in ALLOWED):
+        print(f"Port {packet.dport} knocked by {packet.src}:{packet.sport}")
+        system(f"iptables -I INPUT -p tcp --dport 22 -s {packet.src} -j ACCEPT")
+        system(f"echo 'iptables -D INPUT -p tcp --dport 22 -s {packet.src} -j ACCEPT' | at now + {EXPIRETIME} minutes")
+        ALLOWED[packet.src]=time()
+        pkt.drop()
+
+nfqueue=NetfilterQueue()
+nfqueue.bind(1, portknocking)
+
+try:
+    nfqueue.run()
+except KeyboardInterrupt:
+    print("\nExit with Keyboard Interrupt")
+```
+
+  > _To knocking port and allow ssh connections from your computer just execute this command:_
+
+```bash
+nc -p 65534 SERVER 65535
+```
