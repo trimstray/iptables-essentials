@@ -50,8 +50,8 @@
 - [How it works?](#how-it-works)
 - [Iptables Rules](#iptables-rules)
   * [Saving Rules](#saving-rules)
-      - [Debian Based](#debian-based)
-      - [RedHat Based](#redhat-based)
+    - [Debian Based](#debian-based)
+    - [RedHat Based](#redhat-based)
   * [List out all of the active iptables rules with verbose](#list-out-all-of-the-active-iptables-rules-with-verbose)
   * [List out all of the active iptables rules with numeric lines and verbose](#list-out-all-of-the-active-iptables-rules-with-numeric-lines-and-verbose)
   * [Print out all of the active iptables rules](#print-out-all-of-the-active-iptables-rules)
@@ -106,7 +106,7 @@
   * [Protection against port scanning](#protection-against-port-scanning)
   * [SSH brute-force protection](#ssh-brute-force-protection)
   * [Syn-flood protection](#syn-flood-protection)
-    + [Mitigating SYN Floods With SYNPROXY](#mitigating-syn-floods-with-synproxy)
+    - [Mitigating SYN Floods With SYNPROXY](#mitigating-syn-floods-with-synproxy)
   * [Block New Packets That Are Not SYN](#block-new-packets-that-are-not-syn)
   * [Force Fragments packets check](#force-fragments-packets-check)
   * [XMAS packets](#xmas-packets)
@@ -121,7 +121,7 @@
 
 ****
 
-### Tools to help you configure Iptables
+## Tools to help you configure Iptables
 
 <p>
 &nbsp;&nbsp;:small_orange_diamond: <a href="http://shorewall.org/"><b>Shorewall</b></a> - advanced gateway/firewall configuration tool for GNU/Linux.<br>
@@ -130,7 +130,7 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://github.com/firehol/firehol"><b>FireHOL</b></a> - offer simple and powerful configuration for all Linux firewall and traffic shaping requirements.<br>
 </p>
 
-### Manuals/Howtos/Tutorials
+## Manuals/Howtos/Tutorials
 
 <p>
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://major.io/2010/04/12/best-practices-iptables/"><b>Best practices: iptables - by Major Hayden</b></a><br>
@@ -142,7 +142,7 @@
 &nbsp;&nbsp;:small_orange_diamond: <a href="https://making.pusher.com/per-ip-rate-limiting-with-iptables/"><b>Per-IP rate limiting with iptables</b></a><br>
 </p>
 
-### Useful Kernel Settings (sysctl) Configuration
+## Useful Kernel Settings (sysctl) Configuration
 
 ##### rp_filter
 
@@ -250,14 +250,14 @@ EOF
 - [How to Enable IP Forwarding in Linux](http://www.ducea.com/2006/08/01/how-to-enable-ip-forwarding-in-linux/)
 - [What is kernel ip forwarding?](https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding)
 
-### How it works?
+## How it works?
 
 <p align="center">
     <img src="https://github.com/trimstray/iptables-essentials/blob/master/static/img/iptables-packet-flow-ng.png"
         alt="Master">
 </p>
 
-### Iptables Rules
+## Iptables Rules
 
 #### Saving Rules
 
@@ -845,4 +845,3 @@ except KeyboardInterrupt:
 ```bash
 nc -p 65534 SERVER 65535
 ```
-
